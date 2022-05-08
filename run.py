@@ -2,7 +2,7 @@
 Application : Media Creation Tool
 File name   : run.py
 Authors     : Jacob Summerville
-Description : This file converts an iso into bootable media
+Description : This file converts an iso into bootable media using MacOS
 """
 
 import argparse

@@ -31,7 +31,8 @@ def select_disk():
     disk_list = result.stdout.split('\n')
     parsed_disk_list = []
 
-    # parse disks that can't be used out
+    # parse disks out that can't be used
+    for disk in disk_list:
         disk = disk.strip()
         if disk == disk_list[0] or '/dev/disk' in disk:
             parsed_disk_list.append(disk)
@@ -66,6 +67,7 @@ def select_disk():
 
     print('')
 
+    # extract just the disk number
     selected_disk = selected_disk.replace('/dev/disk', '')
 
     if 's' in selected_disk:
@@ -88,6 +90,7 @@ def convert_ISO (iso_file, img_file, dmg_file):
         print('Error converting file:', img_file)
         sys.exit()
 
+    # change from a dmg to img file
     status = cli_command(['mv', dmg_file, img_file])
     if status !=0:
         print('Error renaming file:', img_file)
@@ -136,11 +139,13 @@ def main ():
         print('Please enter an iso file')
         sys.exit()
 
+    # if a disk number was not passed in, run disk selection
     if args.disk:
         disk = str(args.disk)
     else:
         disk = select_disk()
 
+    # save the three filenames that will be used
     iso_file = str(args.file)
     img_file = iso_file.replace('.iso', '.img')
     dmg_file = img_file + '.dmg'
@@ -148,14 +153,14 @@ def main ():
     print('ISO:', iso_file)
     print('Disk:', disk, '\n')
 
-    return
-
+    # remove the img_file and dmg_file if they exist prior to running
     if os.path.isfile(img_file):
         os.remove(img_file)
 
     if os.path.isfile(dmg_file):
         os.remove(dmg_file)
 
+    # Run the media creation process
     convert_ISO(iso_file, img_file, dmg_file)
     unmount_disk(disk)
     create_installer(img_file, disk)
